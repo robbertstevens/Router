@@ -11,7 +11,9 @@ class Router {
         if (class_exists(self::$request["controller"])) {
             $controller = new self::$request["controller"]();
             if (method_exists($controller, self::$request["method"])) {
-                Creator::create(self::$request["controller"], self::$request["method"], self::$request["params"]);
+                if (isset(self::$request["params"])) $params = self::$request["params"];
+                else $params = [];
+                Creator::create(self::$request["controller"], self::$request["method"], $params);
             } else { //TODO: make this error handling more advanced
                 echo "Method not found";
             }
@@ -24,8 +26,7 @@ class Router {
     }
     private static function handle_request() {
         foreach (self::$routes as $route => $options) {
-            $regex =  $options["pattern"];
-            $regex = "~^" .$regex . "$~m";
+            $regex = "~^" . $options["pattern"] . "$~m";
             
             if (preg_match($regex, $_SERVER["REQUEST_URI"])) 
                 self::$request = $options;

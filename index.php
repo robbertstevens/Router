@@ -6,7 +6,7 @@ Router::make("home", [
     "controller" => "HomeController", 
     "method" => "index", 
     "request_method" => "GET",
-    "params" => []
+    //"params" => []
 ]);
 Router::make("users", [
     "pattern" => "/users/", 
