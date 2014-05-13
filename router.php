@@ -11,8 +11,7 @@ class Router {
         if (class_exists(self::$request["controller"])) {
             $controller = new self::$request["controller"]();
             if (method_exists($controller, self::$request["method"])) {
-                $method =self::$request["method"];
-                $controller->$method();//
+                Controller::create(self::$request["controller"], self::$request["method"], self::$request["params"]);
             } else { //TODO: make this error handling more advanced
                 echo "Method not found";
             }
@@ -20,7 +19,7 @@ class Router {
             echo "Controller not found";   
         }
     }
-    public static function link($name, array $arg = null) {
+    public static function link($name, array $params = []) {
         return self::$routes[$name]["pattern"];   
     }
     private static function handle_request() {
@@ -34,19 +33,27 @@ class Router {
     }
 }
 
-class HomeController {
+class Controller {
+    public static function create($class, $method,array $params = []) {       
+        $reflection_method = new ReflectionMethod($class,$method);
+        return $reflection_method->invokeArgs(new $class, $params);
+    }
+}
+class HomeController extends Controller{
     public function index() {
         echo Router::link("home");
     }
    // public function getUser($id)
 }
 
-class UserController {
+class UserController extends Controller{
     public function index() {
         echo Router::link("users");
     }
-    public function details() {
+    public function details($one, $two, $three, $four) {
         echo Router::link("user");
+        echo "<br>";
+        echo $one . $two . $three . $four;
     }
    // public function getUser($id)
 }
