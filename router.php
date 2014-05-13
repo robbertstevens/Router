@@ -11,7 +11,7 @@ class Router {
         if (class_exists(self::$request["controller"])) {
             $controller = new self::$request["controller"]();
             if (method_exists($controller, self::$request["method"])) {
-                if (isset(self::$request["params"])) $params = self::$request["params"];
+                if (array_key_exists("params", self::$request)) $params = self::$request["params"];
                 else $params = [];
                 Creator::create(self::$request["controller"], self::$request["method"], $params);
             } else { //TODO: make this error handling more advanced
