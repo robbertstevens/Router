@@ -11,7 +11,7 @@ class Router {
         if (class_exists(self::$request["controller"])) {
             $controller = new self::$request["controller"]();
             if (method_exists($controller, self::$request["method"])) {
-                Controller::create(self::$request["controller"], self::$request["method"], self::$request["params"]);
+                Creator::create(self::$request["controller"], self::$request["method"], self::$request["params"]);
             } else { //TODO: make this error handling more advanced
                 echo "Method not found";
             }
@@ -33,20 +33,20 @@ class Router {
     }
 }
 
-class Controller {
+class Creator {
     public static function create($class, $method,array $params = []) {       
         $reflection_method = new ReflectionMethod($class,$method);
         return $reflection_method->invokeArgs(new $class, $params);
     }
 }
-class HomeController extends Controller{
+class HomeController {
     public function index() {
         echo Router::link("home");
     }
    // public function getUser($id)
 }
 
-class UserController extends Controller{
+class UserController {
     public function index() {
         echo Router::link("users");
     }
