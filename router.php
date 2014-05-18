@@ -7,13 +7,16 @@ class Router {
          self::$routes[$name] = $args;
     }
     public static function route() {
+        $params = [];
         self::handle_request();
         if (class_exists(self::$request["controller"])) {
-            $controller = new self::$request["controller"]();
-            if (method_exists($controller, self::$request["method"])) {
+            $reflection_class = new ReflectionClass(self::$request["controller"]);
+            
+            if ($reflection_class->hasMethod(self::$request["method"])) {
                 if (array_key_exists("params", self::$request)) $params = self::$request["params"];
-                else $params = [];
-                Creator::create(self::$request["controller"], self::$request["method"], $params);
+                
+                $reflection_method = new ReflectionMethod($reflection_class->getName(), self::$request["method"]);
+                $reflection_method->invokeArgs($reflection_class->newInstance(), $params);
             } else { //TODO: make this error handling more advanced
                 echo "Method not found";
             }
@@ -21,9 +24,11 @@ class Router {
             echo "Controller not found";   
         }
     }
+    
     public static function link($name, array $params = []) {
-        return self::$routes[$name]["pattern"];   
+       return self::$routes[$name]["pattern"];   
     }
+    
     private static function handle_request() {
         foreach (self::$routes as $route => $options) {
             $regex = "~^" . $options["pattern"] . "$~m";
